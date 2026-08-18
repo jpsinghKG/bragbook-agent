@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "gitpython>=3.1.59",
     "google-api-python-client>=2.198.0",
     "google-auth-oauthlib>=1.4.0",
     "pydantic-ai-slim[anthropic,google,openai]>=2.31.1",
@@ -15,6 +16,9 @@ dependencies = [
     "rich>=15.0.0",
     "typer>=0.27.1",
 ]
+
+[tool.uv]
+package = false
 
 [build-system]
 requires = ["uv_build>=0.11.1,<0.12.0"]
