@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 
 class GitLocalCommitAttrs(BaseModel):
     repo_path: str
-    branch: str | None = None
     files: list[str] = Field(default_factory=list)
     insertions: int = 0
     deletions: int = 0

@@ -66,7 +66,7 @@ class GitLocalCollector:
                 return remote.url
         return repo.remotes[0].url
 
-    def _patch_for(commit) -> str:
+    def _patch_for(self, commit) -> str:
         if commit.parents:
             diffs = commit.parents[0].diff(commit, create_patch=True)
         else:
