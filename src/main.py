@@ -5,6 +5,7 @@ from collectors.git_local_collector.git_local_collector import collect
 from collectors.github_collector.github_collector import GithubCollector
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from pathlib import Path
 
 from store import connect, upsert_events
 from models.event import Event
@@ -30,14 +31,14 @@ def get_github_events() -> list[Event]:
     until = now + timedelta(days=1)
 
     github_collector = GithubCollector()
-    github_collector.get_commits(identities, since, until)
+    return github_collector.get_commits(identities, since, until)
 
 
 if __name__ == "__main__":
-    # git_local_events = getGitLocalEvents()
+    git_local_events = get_git_local_events()
+    github_events = get_github_events()
 
-    # events = [*git_local_events]
+    events = [*git_local_events, *github_events]
 
-    # conn = connect(Path("db/bragbook.db"))
-    # upsert_events(conn, events)
-    get_github_events()
+    conn = connect(Path("db/bragbook.db"))
+    upsert_events(conn, events)
