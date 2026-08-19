@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
@@ -9,11 +10,14 @@ from models.event import Event, EventType
 
 MIGRATIONS_DIR = Path(__file__).parent / "migrations"
 
+logger = logging.getLogger(__name__)
+
 
 def connect(db_path: Path | str) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     migrate(conn)
+
     return conn
 
 
@@ -27,6 +31,7 @@ def migrate(conn: sqlite3.Connection) -> list[str]:
         )
         """
     )
+
     applied = {row["version"] for row in conn.execute("SELECT version FROM schema_migrations")}
 
     newly_applied = []
@@ -34,13 +39,16 @@ def migrate(conn: sqlite3.Connection) -> list[str]:
         version = path.stem
         if version in applied:
             continue
+
         with conn:
             conn.executescript(path.read_text())
             conn.execute(
                 "INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)",
                 (version, datetime.now(UTC).isoformat()),
             )
+
         newly_applied.append(version)
+
     return newly_applied
 
 
@@ -51,7 +59,7 @@ def upsert_events(conn: sqlite3.Connection, events: list[Event]) -> None:
     when an event was first observed, not when it was last re-collected.
     """
     with conn:
-        conn.executemany(
+        cursor = conn.executemany(
             """
             INSERT INTO events (
                 id, source, external_id, type, occurred_at, ended_at,
@@ -88,6 +96,8 @@ def upsert_events(conn: sqlite3.Connection, events: list[Event]) -> None:
             ],
         )
 
+    logger.debug("upserted %d events (rowcount=%d)", len(events), cursor.rowcount)
+
 
 def get_events(
     conn: sqlite3.Connection,
@@ -97,14 +107,18 @@ def get_events(
     """Read events back in occurred_at order, optionally bounded by a range."""
     query = "SELECT * FROM events"
     clauses, params = [], []
+
     if since is not None:
         clauses.append("occurred_at >= ?")
         params.append(since.isoformat())
+
     if until is not None:
         clauses.append("occurred_at < ?")
         params.append(until.isoformat())
+
     if clauses:
         query += " WHERE " + " AND ".join(clauses)
+        
     query += " ORDER BY occurred_at"
 
     rows = conn.execute(query, params).fetchall()
