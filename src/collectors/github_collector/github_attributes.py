@@ -41,3 +41,10 @@ class GithubPullRequestAttributes(BaseModel):
     changed_files: int = 0
     commits: int = 0
     files: list[GithubPullRequestFile] = Field(default_factory=list)
+
+
+class GithubReviewAttributes(BaseModel):
+    state: str
+    pr_number: int
+    pr_title: str
+    pr_url: str
