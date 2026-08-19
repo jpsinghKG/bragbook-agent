@@ -12,23 +12,26 @@ from utils.collectors import parse_identities, parse_roots
 
 load_dotenv()
 
+
 def get_git_local_events() -> list[Event]:
     roots = parse_roots(os.getenv("GIT_LOCAL_ROOTS"))
     identities = parse_identities(os.getenv("GIT_LOCAL_IDENTITIES"))
     since = datetime.today() - timedelta(days=1)
     until = datetime.today() + timedelta(days=1)
     include_patch = False
-    
+
     return collect(roots, identities, since, until, include_patch)
+
 
 def get_github_events() -> list[Event]:
     identities = parse_identities(os.getenv("GITHUB_IDENTITIES"))
     now = datetime.now(UTC)
     since = now - timedelta(days=1)
     until = now + timedelta(days=1)
-    
+
     github_collector = GithubCollector()
     github_collector.get_commits(identities, since, until)
+
 
 if __name__ == "__main__":
     # git_local_events = getGitLocalEvents()
@@ -38,4 +41,3 @@ if __name__ == "__main__":
     # conn = connect(Path("db/bragbook.db"))
     # upsert_events(conn, events)
     get_github_events()
-

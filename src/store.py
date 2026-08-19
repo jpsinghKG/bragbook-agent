@@ -118,7 +118,7 @@ def get_events(
 
     if clauses:
         query += " WHERE " + " AND ".join(clauses)
-        
+
     query += " ORDER BY occurred_at"
 
     rows = conn.execute(query, params).fetchall()

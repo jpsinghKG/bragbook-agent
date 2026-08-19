@@ -104,10 +104,12 @@ def collect(roots, identities, since, until, include_patch=False) -> list[Event]
     events = []
     for repo_path in discover_repos(roots):
         try:
-            events.extend(GitLocalCollector(repo_path, include_patch).getCommits(identities, since, until))
+            events.extend(
+                GitLocalCollector(repo_path, include_patch).getCommits(identities, since, until)
+            )
         except (InvalidGitRepositoryError, GitCommandError):
             continue
-        
+
     return events
 
 

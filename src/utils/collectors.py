@@ -6,6 +6,7 @@ def parse_identities(identities: str) -> list[str]:
         return []
     return [identity.strip() for identity in identities.split(",")]
 
+
 def parse_roots(roots: str) -> list[Path]:
     if not roots:
         return []
