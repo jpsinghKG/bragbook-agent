@@ -15,3 +15,29 @@ class GithubCommitAttributes(BaseModel):
     insertions: int = 0
     deletions: int = 0
     is_merge: bool = False
+
+
+class GithubPullRequestFile(BaseModel):
+    filename: str
+    insertions: int = 0
+    deletions: int = 0
+    patch: str | None = None
+
+
+class GithubIssueAttributes(BaseModel):
+    state: str
+    comments: int = 0
+    labels: list[str] = Field(default_factory=list)
+
+
+class GithubPullRequestAttributes(BaseModel):
+    state: str
+    merged: bool = False
+    draft: bool = False
+    base_branch: str
+    head_branch: str
+    insertions: int = 0
+    deletions: int = 0
+    changed_files: int = 0
+    commits: int = 0
+    files: list[GithubPullRequestFile] = Field(default_factory=list)

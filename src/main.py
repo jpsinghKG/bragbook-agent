@@ -1,8 +1,8 @@
 from datetime import UTC
 import os
 
-from collectors.git_local_collector.git_local_collector import collect
-from collectors.github_collector.github_collector import GithubCollector
+from collectors.git_local_collector.git_local_collector import collect as collect_git_local_events
+from collectors.github_collector.github_collector import collect as collect_github_events
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pathlib import Path
@@ -21,7 +21,7 @@ def get_git_local_events() -> list[Event]:
     until = datetime.today() + timedelta(days=1)
     include_patch = False
 
-    return collect(roots, identities, since, until, include_patch)
+    return collect_git_local_events(roots, identities, since, until, include_patch)
 
 
 def get_github_events() -> list[Event]:
@@ -29,9 +29,9 @@ def get_github_events() -> list[Event]:
     now = datetime.now(UTC)
     since = now - timedelta(days=1)
     until = now + timedelta(days=1)
+    include_patch = False
 
-    github_collector = GithubCollector()
-    return github_collector.get_commits(identities, since, until)
+    return collect_github_events(identities, since, until, include_patch)
 
 
 if __name__ == "__main__":
