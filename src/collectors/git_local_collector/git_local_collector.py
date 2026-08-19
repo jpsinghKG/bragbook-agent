@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 from models.event import Event, EventType
-from collectors.git_local.git_local_attributes import GitLocalCommitAttrs
+from collectors.git_local_collector.git_local_attributes import GitLocalCommitAttrs
 
 
 class GitLocalCollector:
@@ -61,9 +61,11 @@ class GitLocalCollector:
     def _get_remote_url(self, repo: Repo) -> str | None:
         if not repo.remotes:
             return None
+
         for remote in repo.remotes:
             if remote.name == "origin":
                 return remote.url
+
         return repo.remotes[0].url
 
     def _patch_for(self, commit) -> str:
@@ -71,6 +73,7 @@ class GitLocalCollector:
             diffs = commit.parents[0].diff(commit, create_patch=True)
         else:
             diffs = commit.diff(NULL_TREE, create_patch=True, R=True)
+
         return "\n".join(d.diff.decode() if isinstance(d.diff, bytes) else d.diff for d in diffs)
 
 
@@ -80,16 +83,20 @@ def discover_repos(
     found = []
     for root in roots:
         root = root.expanduser().resolve()
+
         for dirpath, dirnames, _ in os.walk(root):
             depth = len(Path(dirpath).relative_to(root).parts)
             if depth >= max_depth:
                 dirnames[:] = []
                 continue
+
             if ".git" in dirnames:
                 repo = Path(dirpath)
                 if repo not in exclude:
                     found.append(repo)
+
                 dirnames[:] = [d for d in dirnames if d != ".git"]
+
     return found
 
 
@@ -100,6 +107,7 @@ def collect(roots, identities, since, until, include_patch=False) -> list[Event]
             events.extend(GitLocalCollector(repo_path, include_patch).getCommits(identities, since, until))
         except (InvalidGitRepositoryError, GitCommandError):
             continue
+        
     return events
 
 
