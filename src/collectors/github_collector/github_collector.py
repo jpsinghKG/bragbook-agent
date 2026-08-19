@@ -20,21 +20,28 @@ class GithubCollector:
         self.github = Github(auth=self.auth)
         self.include_patch = include_patch
 
+    def _validate_identities(self, identities: list[str]) -> None:
+        if not identities:
+            raise ValueError("Identities cannot be empty")
+        if len(identities) > 2:
+            raise ValueError("Number of identities cannot be greater than 2")
+
+    def _resolve_date_range(
+        self, from_datetime: datetime | None, to_datetime: datetime | None
+    ) -> tuple[datetime, datetime, str]:
+        now = datetime.now(UTC)
+        since = from_datetime or now - timedelta(days=1)
+        until = to_datetime or now + timedelta(days=1)
+        return since, until, f"{since:%Y-%m-%dT%H:%M:%SZ}..{until:%Y-%m-%dT%H:%M:%SZ}"
+
     def get_commits(
         self,
         identities: list[str],
         from_datetime: datetime | None = None,
         to_datetime: datetime | None = None,
     ):
-        if not identities or len(identities) == 0:
-            raise ValueError("Identities cannot be empty")
-        if len(identities) > 2:
-            raise ValueError("Number of identities cannot be greater than 2")
-
-        now = datetime.now(UTC)
-        since = from_datetime or now - timedelta(days=1)
-        until = to_datetime or now + timedelta(days=1)
-        date_range = f"{since:%Y-%m-%dT%H:%M:%SZ}..{until:%Y-%m-%dT%H:%M:%SZ}"
+        self._validate_identities(identities)
+        _, _, date_range = self._resolve_date_range(from_datetime, to_datetime)
 
         seen = {}
         for identity in identities:
@@ -51,15 +58,8 @@ class GithubCollector:
         from_datetime: datetime | None = None,
         to_datetime: datetime | None = None,
     ):
-        if not identities or len(identities) == 0:
-            raise ValueError("Identities cannot be empty")
-        if len(identities) > 2:
-            raise ValueError("Number of identities cannot be greater than 2")
-
-        now = datetime.now(UTC)
-        since = from_datetime or now - timedelta(days=1)
-        until = to_datetime or now + timedelta(days=1)
-        date_range = f"{since:%Y-%m-%dT%H:%M:%SZ}..{until:%Y-%m-%dT%H:%M:%SZ}"
+        self._validate_identities(identities)
+        _, _, date_range = self._resolve_date_range(from_datetime, to_datetime)
 
         seen = {}
         for identity in identities:
@@ -77,15 +77,8 @@ class GithubCollector:
         from_datetime: datetime | None = None,
         to_datetime: datetime | None = None,
     ):
-        if not identities or len(identities) == 0:
-            raise ValueError("Identities cannot be empty")
-        if len(identities) > 2:
-            raise ValueError("Number of identities cannot be greater than 2")
-
-        now = datetime.now(UTC)
-        since = from_datetime or now - timedelta(days=1)
-        until = to_datetime or now + timedelta(days=1)
-        date_range = f"{since:%Y-%m-%dT%H:%M:%SZ}..{until:%Y-%m-%dT%H:%M:%SZ}"
+        self._validate_identities(identities)
+        _, _, date_range = self._resolve_date_range(from_datetime, to_datetime)
 
         seen = {}
         for identity in identities:
@@ -102,15 +95,8 @@ class GithubCollector:
         from_datetime: datetime | None = None,
         to_datetime: datetime | None = None,
     ):
-        if not identities or len(identities) == 0:
-            raise ValueError("Identities cannot be empty")
-        if len(identities) > 2:
-            raise ValueError("Number of identities cannot be greater than 2")
-
-        now = datetime.now(UTC)
-        since = from_datetime or now - timedelta(days=1)
-        until = to_datetime or now + timedelta(days=1)
-        date_range = f"{since:%Y-%m-%dT%H:%M:%SZ}..{until:%Y-%m-%dT%H:%M:%SZ}"
+        self._validate_identities(identities)
+        since, until, date_range = self._resolve_date_range(from_datetime, to_datetime)
         lowered_identities = {identity.lower() for identity in identities}
 
         seen = {}
