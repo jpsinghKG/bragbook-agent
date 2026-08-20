@@ -35,6 +35,7 @@ def get_github_events() -> list[Event]:
 
 
 if __name__ == "__main__":
+    # collect and persist events
     git_local_events = get_git_local_events()
     github_events = get_github_events()
     linear_events = collect_linear_events(since, until)
@@ -47,3 +48,9 @@ if __name__ == "__main__":
 
     conn = connect(Path("db/bragbook.db"))
     upsert_events(conn, events)
+
+    # redact 
+
+    # summarize
+
+    # persist to md or gdoc
