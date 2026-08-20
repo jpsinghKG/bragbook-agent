@@ -12,6 +12,7 @@ from pathlib import Path
 from store import connect, upsert_events, get_events
 from redact import Redactor
 from summarize import Summarizer
+from sinks.markdown import write_markdown
 from models.event import Event
 from utils.collectors import parse_identities, parse_roots
 
@@ -61,5 +62,7 @@ if __name__ == "__main__":
     # summarize
     summarizer = Summarizer()
     summary = summarizer.summarize(redacted_events)
-    print(summary)
+
     # persist to md or gdoc
+    path = write_markdown(summary, now)
+    print(f"wrote summary to {path}")
