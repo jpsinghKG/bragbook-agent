@@ -55,12 +55,11 @@ if __name__ == "__main__":
     # redact 
     events = get_events(conn, since, until)
 
-    redactor = Redactor(RedactionLevel.METADATA_ONLY)
+    redactor = Redactor(RedactionLevel.NONE)
     redacted_events = redactor.redact(events)
 
     # summarize
     summarizer = Summarizer()
     summary = summarizer.summarize(redacted_events)
     print(summary)
-
     # persist to md or gdoc
