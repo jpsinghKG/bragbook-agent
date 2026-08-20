@@ -9,6 +9,14 @@ from typing import Any
 from pydantic import BaseModel, Field, computed_field
 
 
+class EventSource(StrEnum):
+    """Which collector produced this event."""
+
+    GIT = "git"
+    GITHUB = "github"
+    LINEAR = "linear"
+
+
 class EventType(StrEnum):
     """Small, stable category used for cross-source grouping and rollups.
 
@@ -34,7 +42,7 @@ class Event(BaseModel):
     re-running a collector never produces a duplicate row.
     """
 
-    source: str
+    source: EventSource
     external_id: str
     type: EventType
     occurred_at: datetime

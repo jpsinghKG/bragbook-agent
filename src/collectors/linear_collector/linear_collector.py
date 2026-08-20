@@ -10,7 +10,7 @@ from collectors.linear_collector.linear_attributes import (
     LinearCommentAttributes,
     LinearStateTransitionAttributes,
 )
-from models.event import Event, EventType
+from models.event import Event, EventSource, EventType
 
 LINEAR_API_URL = "https://api.linear.app/graphql"
 
@@ -139,7 +139,7 @@ class LinearCollector:
         )
 
         return Event(
-            source="linear",
+            source=EventSource.LINEAR,
             external_id=history_node["id"],
             type=EventType.TICKET,
             occurred_at=history_node["createdAt"],
@@ -158,7 +158,7 @@ class LinearCollector:
         )
 
         return Event(
-            source="linear",
+            source=EventSource.LINEAR,
             external_id=comment["id"],
             type=EventType.TICKET,
             occurred_at=comment["createdAt"],

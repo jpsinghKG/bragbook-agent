@@ -6,7 +6,7 @@ from git import Repo, Commit, NULL_TREE
 from pathlib import Path
 from datetime import datetime
 
-from models.event import Event, EventType
+from models.event import Event, EventSource, EventType
 from collectors.git_local_collector.git_local_attributes import GitLocalCommitAttrs
 
 
@@ -45,7 +45,7 @@ class GitLocalCollector:
         )
 
         return Event(
-            source="git",
+            source=EventSource.GIT,
             external_id=commit.hexsha,
             type=EventType.COMMIT,
             occurred_at=commit.authored_datetime,

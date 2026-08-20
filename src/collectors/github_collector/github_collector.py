@@ -2,7 +2,7 @@ from datetime import UTC
 import os
 from github import Auth, Github
 from datetime import datetime, timedelta
-from models.event import Event, EventType
+from models.event import Event, EventSource, EventType
 from collectors.github_collector.github_attributes import (
     GithubCommitAttributes,
     GithubCommitFile,
@@ -133,7 +133,7 @@ class GithubCollector:
         )
 
         return Event(
-            source="github",
+            source=EventSource.GITHUB,
             external_id=commit.sha,
             type=EventType.COMMIT,
             occurred_at=commit.commit.author.date,
@@ -169,7 +169,7 @@ class GithubCollector:
         )
 
         return Event(
-            source="github",
+            source=EventSource.GITHUB,
             external_id=str(pr.id),
             type=EventType.PULL_REQUEST,
             occurred_at=pr.created_at,
@@ -190,7 +190,7 @@ class GithubCollector:
         )
 
         return Event(
-            source="github",
+            source=EventSource.GITHUB,
             external_id=str(issue.id),
             type=EventType.TICKET,
             occurred_at=issue.created_at,
@@ -212,7 +212,7 @@ class GithubCollector:
         )
 
         return Event(
-            source="github",
+            source=EventSource.GITHUB,
             external_id=str(review.id),
             type=EventType.REVIEW,
             occurred_at=review.submitted_at,

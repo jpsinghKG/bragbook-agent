@@ -6,7 +6,7 @@ import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
 
-from models.event import Event, EventType
+from models.event import Event, EventSource, EventType
 
 MIGRATIONS_DIR = Path(__file__).parent / "migrations"
 
@@ -79,7 +79,7 @@ def upsert_events(conn: sqlite3.Connection, events: list[Event]) -> None:
             [
                 (
                     e.id,
-                    e.source,
+                    e.source.value,
                     e.external_id,
                     e.type.value,
                     e.occurred_at.isoformat(),
@@ -127,7 +127,7 @@ def get_events(
 
 def _row_to_event(row: sqlite3.Row) -> Event:
     return Event(
-        source=row["source"],
+        source=EventSource(row["source"]),
         external_id=row["external_id"],
         type=EventType(row["type"]),
         occurred_at=datetime.fromisoformat(row["occurred_at"]),
