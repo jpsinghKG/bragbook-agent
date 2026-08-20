@@ -1,3 +1,4 @@
+from models.redaction_level import RedactionLevel
 from datetime import UTC
 import os
 
@@ -8,7 +9,9 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pathlib import Path
 
-from store import connect, upsert_events
+from store import connect, upsert_events, get_events
+from redact import Redactor
+from summarize import Summarizer
 from models.event import Event
 from utils.collectors import parse_identities, parse_roots
 
@@ -50,7 +53,14 @@ if __name__ == "__main__":
     upsert_events(conn, events)
 
     # redact 
+    events = get_events(conn, since, until)
+
+    redactor = Redactor(RedactionLevel.METADATA_ONLY)
+    redacted_events = redactor.redact(events)
 
     # summarize
+    summarizer = Summarizer()
+    summary = summarizer.summarize(redacted_events)
+    print(summary)
 
     # persist to md or gdoc
