@@ -23,6 +23,16 @@ in the data.
 - Skip incidental noise (e.g. a single typo-fix commit) unless it's the only \
 thing that happened.
 - If the events list is empty, say so plainly rather than inventing activity.
+- Never cite line/insertion/deletion counts, commit counts, or file counts as \
+an achievement in themselves ("461 insertions" is not an accomplishment). If \
+a count is the only detail available for an item, omit the item rather than \
+padding it with a number.
+- Don't use generic claims of impact ("improved reliability", "increased \
+functionality", "kept project momentum strong") unless the event's own title \
+or body states a concrete outcome. If you can't ground a claim in the actual \
+data, state the plain fact instead of dressing it up.
+- Prefer the specific language from event titles/descriptions over invented \
+paraphrasing.
 
 Output in markdown format.
 

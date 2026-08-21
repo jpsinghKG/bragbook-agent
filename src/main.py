@@ -12,8 +12,10 @@ from pathlib import Path
 from store import connect, upsert_events, get_events
 from redact import Redactor
 from summarize import Summarizer
+from sinks.markdown import write_markdown
 from models.event import Event
 from utils.collectors import parse_identities, parse_roots
+from utils.events import dedupe_commits
 
 load_dotenv()
 
@@ -43,11 +45,11 @@ if __name__ == "__main__":
     github_events = get_github_events()
     linear_events = collect_linear_events(since, until)
 
-    events = [
-        *git_local_events, 
-        *github_events, 
+    events = dedupe_commits([
+        *git_local_events,
+        *github_events,
         *linear_events
-    ]
+    ])
 
     conn = connect(Path("db/bragbook.db"))
     upsert_events(conn, events)
@@ -55,12 +57,13 @@ if __name__ == "__main__":
     # redact 
     events = get_events(conn, since, until)
 
-    redactor = Redactor(RedactionLevel.METADATA_ONLY)
+    redactor = Redactor(RedactionLevel.NONE)
     redacted_events = redactor.redact(events)
 
     # summarize
     summarizer = Summarizer()
     summary = summarizer.summarize(redacted_events)
-    print(summary)
 
     # persist to md or gdoc
+    path = write_markdown(summary, now)
+    print(f"wrote summary to {path}")

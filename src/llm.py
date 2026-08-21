@@ -27,4 +27,9 @@ def get_agent(system_prompt: str) -> Agent[None, str]:
     if not model_name:
         raise RuntimeError("LLM_MODEL environment variable must be set")
 
-    return Agent(f"{provider}:{model_name}", system_prompt=system_prompt)
+    max_tokens = os.getenv("LLM_MAX_TOKENS")
+    model_settings = {"max_tokens": int(max_tokens)} if max_tokens else None
+
+    return Agent(
+        f"{provider}:{model_name}", system_prompt=system_prompt, model_settings=model_settings
+    )
