@@ -1,0 +1,5 @@
+#!/bin/sh
+# Formats staged files with ruff before commit, then re-stages them.
+
+uv run ruff format .
+git diff --name-only --cached --diff-filter=ACM | grep '\.py$' | xargs -I{} git add {}

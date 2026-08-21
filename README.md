@@ -13,30 +13,107 @@ and [decisions](docs/decisions/README.md).
 
 ## Requirements
 
+- macOS
 - Python 3.13+
 - [uv](https://docs.astral.sh/uv/)
 - `gh` CLI, authenticated (`gh auth status`)
-- An LLM: a provider API key, or [Ollama](https://ollama.com) running locally
+- A GitHub personal access token (for the GitHub collector)
+- A Linear API token (for the Linear collector)
+- An LLM: a provider API key (Anthropic, OpenAI, or Google), or
+  [Ollama](https://ollama.com) running locally
 
-## Setup
+## macOS setup
 
-```sh
-uv sync
-```
+1. **Install Homebrew**, if you don't already have it:
+
+   ```sh
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. **Install uv**:
+
+   ```sh
+   brew install uv
+   ```
+
+3. **Install Python 3.13**. uv can manage this for you — no separate pyenv
+   install needed:
+
+   ```sh
+   uv python install 3.13
+   ```
+
+4. **Install and authenticate the `gh` CLI**:
+
+   ```sh
+   brew install gh
+   gh auth login
+   gh auth status   # should report "Logged in"
+   ```
+
+5. **Clone the repo and install dependencies**:
+
+   ```sh
+   git clone https://github.com/jpsinghKG/bragbook-agent.git
+   cd bragbook-agent
+   uv sync
+   ```
+
+6. **Create your `.env`** from the template and fill in the values below:
+
+   ```sh
+   cp .env.example .env
+   ```
+
+7. **(Optional) Install Ollama**, if you'd rather run the LLM locally instead
+   of using a provider API key:
+
+   ```sh
+   brew install ollama
+   ollama serve
+   ```
 
 ## Configuration
 
-Config lives in a TOML file and covers, at minimum:
+Configuration is environment variables, loaded from `.env` (see
+[.env.example](.env.example)):
 
-- **identity** — the git emails and account handles that count as you
-- **llm** — provider and model (`anthropic`, `openai`, `gemini`, `ollama`)
-- **sources** — which collectors are enabled, and their settings
-- **git roots** — directories to scan, plus a repo denylist
-- **privacy** — how much reaches the LLM (metadata only, metadata plus
-  diffstat, or full diffs), settable globally and overridable per repo
-- **schedule** — run time, timezone, and the day boundary
+- **`GIT_LOCAL_IDENTITIES`** — comma-separated git usernames that count as you
+- **`GIT_LOCAL_ROOTS`** — comma-separated absolute paths to scan for local git
+  activity
+- **`GITHUB_IDENTITIES`** — comma-separated GitHub handles that count as you
+- **`GITHUB_API_TOKEN`** — a GitHub personal access token
+- **`LINEAR_API_TOKEN`** — a Linear API token
+- **`LLM_PROVIDER`** — `anthropic`, `openai`, `google`, or `ollama`
+- **`LLM_MODEL`** — the model name for that provider
+- **`LLM_MAX_TOKENS`** — optional, raise for reasoning models that burn tokens
+  on thinking
+- One of **`ANTHROPIC_API_KEY`**, **`OPENAI_API_KEY`**, **`GOOGLE_API_KEY`**,
+  or **`OLLAMA_BASE_URL`**, matching `LLM_PROVIDER`
 
-Days with no detected activity are skipped rather than logged.
+## Running
+
+```sh
+make run
+```
+
+This collects the last day of activity from local git, GitHub, and Linear,
+summarizes it with the configured LLM, and writes the result to
+[summaries/](summaries/) as a Markdown file. Days with no detected activity
+are skipped rather than logged.
+
+## Common commands
+
+```sh
+make install     # uv sync, also installs the pre-commit hook
+make hooks       # install the pre-commit hook (runs automatically via install)
+make run         # run the pipeline once
+make format      # ruff format
+make lint        # ruff check
+make lint-fix    # ruff check --fix
+make test        # run tests
+make clean       # remove caches
+```
 
 See [docs/architecture.md](docs/architecture.md) for how the pieces fit together
 and [docs/scope.md](docs/scope.md) for what is deliberately out of scope.
