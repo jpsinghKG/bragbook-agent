@@ -12,6 +12,7 @@ wheels/
 # Secrets
 .env
 .env.local
+bragbook.toml
 
 # Tooling
 .ruff_cache/
