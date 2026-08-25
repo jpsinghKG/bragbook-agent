@@ -50,8 +50,8 @@ class Summarizer:
     def __init__(self, system_prompt: str = SYSTEM_PROMPT):
         self.system_prompt = system_prompt
 
-    def summarize(self, events: list[Event]) -> str:
-        agent = get_agent(self.system_prompt)
+    def summarize(self, events: list[Event], provider: str, model: str, max_tokens: int) -> str:
+        agent = get_agent(self.system_prompt, provider, model, max_tokens)
         payload = json.dumps([event.model_dump(mode="json") for event in events], indent=2)
         result = agent.run_sync(f"Events:\n{payload}")
         return result.output

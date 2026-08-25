@@ -7,6 +7,10 @@ from pydantic_settings import (
 )
 
 
+class AppConfig(BaseModel):
+    days_since: int = 1
+
+
 class SourcesConfig(BaseModel):
     git_local: bool = True
     github: bool = True
@@ -32,11 +36,11 @@ class LLMConfig(BaseModel):
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(toml_file="bragbook.toml")
 
+    app: AppConfig = AppConfig()
     sources: SourcesConfig = SourcesConfig()
     git_local: GitLocalConfig = GitLocalConfig()
     github: GithubConfig = GithubConfig()
     llm: LLMConfig
-    days_since: int = 1
 
     @classmethod
     def settings_customise_sources(

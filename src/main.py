@@ -1,6 +1,5 @@
 from models.redaction_level import RedactionLevel
 from datetime import UTC
-import os
 
 from collectors.git_local_collector.git_local_collector import collect as collect_git_local_events
 from collectors.github_collector.github_collector import collect as collect_github_events
@@ -19,35 +18,39 @@ from sinks.markdown import write_markdown
 from models.event import Event
 from utils.collectors import parse_identities, parse_roots
 from utils.events import dedupe_commits
+from config.settings import Settings
 
 load_dotenv()
 
+settings = Settings()
 now = datetime.now(UTC)
-since = now - timedelta(days=int(os.getenv("DAYS_SINCE", 1)))
+since = now - timedelta(days=settings.app.days_since)
 until = now + timedelta(days=1)
 
 
 def get_git_local_events() -> list[Event]:
-    roots = parse_roots(os.getenv("GIT_LOCAL_ROOTS"))
-    identities = parse_identities(os.getenv("GIT_LOCAL_IDENTITIES"))
+    roots = settings.git_local.roots
+    identities = settings.git_local.identities
     include_patch = False
 
     return collect_git_local_events(roots, identities, since, until, include_patch)
 
 
 def get_github_events() -> list[Event]:
-    identities = parse_identities(os.getenv("GITHUB_IDENTITIES"))
-    include_patch = False
+    identities = settings.github.identities
+    include_patch = False  # todo: move to config
 
     return collect_github_events(identities, since, until, include_patch)
 
 
 if __name__ == "__main__":
     # collect and persist events
-    git_local_events = get_git_local_events()
-    github_events = get_github_events()
-    linear_events = collect_linear_events(since, until)
-    user_input_events = collect_user_input_events(since, until)
+    git_local_events = get_git_local_events() if settings.sources.git_local else []
+    github_events = get_github_events() if settings.sources.github else []
+    linear_events = collect_linear_events(since, until) if settings.sources.linear else []
+    user_input_events = (
+        collect_user_input_events(since, until) if settings.sources.user_input else []
+    )
 
     events = dedupe_commits(
         [
@@ -72,7 +75,9 @@ if __name__ == "__main__":
     else:
         # summarize
         summarizer = Summarizer()
-        summary = summarizer.summarize(redacted_events)
+        summary = summarizer.summarize(
+            redacted_events, settings.llm.provider, settings.llm.model, settings.llm.max_tokens
+        )
 
         # persist to md or gdoc
         path = write_markdown(summary, now)
