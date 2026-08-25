@@ -60,10 +60,13 @@ if __name__ == "__main__":
     redactor = Redactor(RedactionLevel.NONE)
     redacted_events = redactor.redact(events)
 
-    # summarize
-    summarizer = Summarizer()
-    summary = summarizer.summarize(redacted_events)
+    if not redacted_events:
+        print("no events today, skipping summary")
+    else:
+        # summarize
+        summarizer = Summarizer()
+        summary = summarizer.summarize(redacted_events)
 
-    # persist to md or gdoc
-    path = write_markdown(summary, now)
-    print(f"wrote summary to {path}")
+        # persist to md or gdoc
+        path = write_markdown(summary, now)
+        print(f"wrote summary to {path}")
