@@ -20,7 +20,7 @@ from utils.events import dedupe_commits
 load_dotenv()
 
 now = datetime.now(UTC)
-since = now - timedelta(days=1)
+since = now - timedelta(days=int(os.getenv("DAYS_SINCE", 1)))
 until = now + timedelta(days=1)
 
 
