@@ -6,6 +6,7 @@ from pydantic_ai import Agent
 
 SUPPORTED_PROVIDERS = {"openai", "anthropic", "google", "ollama"}
 
+
 def get_agent(system_prompt: str) -> Agent[None, str]:
     """Build an Agent for the provider/model configured via env vars.
 

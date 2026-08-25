@@ -49,17 +49,19 @@ if __name__ == "__main__":
     linear_events = collect_linear_events(since, until)
     user_input_events = collect_user_input_events(since, until)
 
-    events = dedupe_commits([
-        *git_local_events,
-        *github_events,
-        *linear_events,
-        *user_input_events,
-    ])
+    events = dedupe_commits(
+        [
+            *git_local_events,
+            *github_events,
+            *linear_events,
+            *user_input_events,
+        ]
+    )
 
     conn = connect(Path("db/bragbook.db"))
     upsert_events(conn, events)
 
-    # redact 
+    # redact
     events = get_events(conn, since, until)
 
     redactor = Redactor(RedactionLevel.NONE)
