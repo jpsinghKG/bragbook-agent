@@ -16,7 +16,6 @@ from redact import Redactor
 from summarize import Summarizer
 from sinks.markdown import write_markdown
 from models.event import Event
-from utils.collectors import parse_identities, parse_roots
 from utils.events import dedupe_commits
 from config.settings import Settings
 
