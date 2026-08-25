@@ -5,6 +5,9 @@ import os
 from collectors.git_local_collector.git_local_collector import collect as collect_git_local_events
 from collectors.github_collector.github_collector import collect as collect_github_events
 from collectors.linear_collector.linear_collector import collect as collect_linear_events
+from collectors.user_input_collector.user_input_collector import (
+    collect as collect_user_input_events,
+)
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from pathlib import Path
@@ -20,7 +23,7 @@ from utils.events import dedupe_commits
 load_dotenv()
 
 now = datetime.now(UTC)
-since = now - timedelta(days=1)
+since = now - timedelta(days=int(os.getenv("DAYS_SINCE", 1)))
 until = now + timedelta(days=1)
 
 
@@ -44,11 +47,13 @@ if __name__ == "__main__":
     git_local_events = get_git_local_events()
     github_events = get_github_events()
     linear_events = collect_linear_events(since, until)
+    user_input_events = collect_user_input_events(since, until)
 
     events = dedupe_commits([
         *git_local_events,
         *github_events,
-        *linear_events
+        *linear_events,
+        *user_input_events,
     ])
 
     conn = connect(Path("db/bragbook.db"))
@@ -60,10 +65,13 @@ if __name__ == "__main__":
     redactor = Redactor(RedactionLevel.NONE)
     redacted_events = redactor.redact(events)
 
-    # summarize
-    summarizer = Summarizer()
-    summary = summarizer.summarize(redacted_events)
+    if not redacted_events:
+        print("no events today, skipping summary")
+    else:
+        # summarize
+        summarizer = Summarizer()
+        summary = summarizer.summarize(redacted_events)
 
-    # persist to md or gdoc
-    path = write_markdown(summary, now)
-    print(f"wrote summary to {path}")
+        # persist to md or gdoc
+        path = write_markdown(summary, now)
+        print(f"wrote summary to {path}")

@@ -97,10 +97,23 @@ Configuration is environment variables, loaded from `.env` (see
 make run
 ```
 
-This collects the last day of activity from local git, GitHub, and Linear,
-summarizes it with the configured LLM, and writes the result to
-[summaries/](summaries/) as a Markdown file. Days with no detected activity
-are skipped rather than logged.
+This collects the last day of activity from local git, GitHub, Linear, and any
+manually logged entries, summarizes it with the configured LLM, and writes the
+result to [summaries/](summaries/) as a Markdown file. Days with no detected
+activity are skipped rather than logged.
+
+### Logging manual entries
+
+For things no collector would otherwise catch (a meeting, a conversation, work
+done outside git/GitHub/Linear):
+
+```sh
+make log MSG="Mentored Alice on the onboarding project" TYPE=meeting
+```
+
+`TYPE` is optional (defaults to `message`) and must be one of the `EventType`
+values in [src/models/event.py](src/models/event.py). Entries are appended to
+`db/user_input.jsonl` and picked up by the next run.
 
 ## Common commands
 
@@ -108,6 +121,7 @@ are skipped rather than logged.
 make install     # uv sync, also installs the pre-commit hook
 make hooks       # install the pre-commit hook (runs automatically via install)
 make run         # run the pipeline once
+make log         # MSG="..." TYPE=... — log a manual entry
 make format      # ruff format
 make lint        # ruff check
 make lint-fix    # ruff check --fix

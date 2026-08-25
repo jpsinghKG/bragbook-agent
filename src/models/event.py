@@ -15,6 +15,7 @@ class EventSource(StrEnum):
     GIT = "git"
     GITHUB = "github"
     LINEAR = "linear"
+    USER_INPUT = "user_input"
 
 
 class EventType(StrEnum):

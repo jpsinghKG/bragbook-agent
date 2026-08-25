@@ -43,12 +43,6 @@ Here's an example format to use:
 
 - **[Project/Theme]:** [One-liner about what was accomplished]
 - **[Project/Theme]:** [One-liner about what was accomplished]
-
-## What I Did
-
-- [Specific achievement 1 and its impact]
-- [Specific achievement 2 and its impact]
-- [Specific achievement 3 and its impact]
 """
 
 
