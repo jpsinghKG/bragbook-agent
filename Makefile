@@ -1,4 +1,4 @@
-.PHONY: install hooks run format lint lint-fix test clean
+.PHONY: install hooks run log format lint lint-fix test clean
 
 install:
 	uv sync
@@ -9,6 +9,9 @@ hooks:
 
 run:
 	PYTHONPATH=src uv run python src/main.py
+
+log:
+	PYTHONPATH=src uv run python src/cli.py "$(MSG)" $(if $(TYPE),--type $(TYPE),)
 
 format:
 	uv run ruff format .

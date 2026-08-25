@@ -19,6 +19,7 @@ wheels/
 
 # Local database
 *.db
+*.jsonl
 
 # Output
 /summaries
