@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from pydantic import BaseModel
 from pydantic_settings import (
     BaseSettings,
@@ -6,9 +7,12 @@ from pydantic_settings import (
     TomlConfigSettingsSource,
 )
 
+from models.redaction_level import RedactionLevel
+
 
 class AppConfig(BaseModel):
     days_since: int = 1
+    redaction_level: RedactionLevel = RedactionLevel.NONE
 
 
 class SourcesConfig(BaseModel):
@@ -21,11 +25,12 @@ class SourcesConfig(BaseModel):
 class GitLocalConfig(BaseModel):
     roots: list[Path] = []
     identities: list[str] = []
+    include_patch: bool = False
 
 
 class GithubConfig(BaseModel):
     identities: list[str] = []
-
+    include_patch: bool = False
 
 class LLMConfig(BaseModel):
     provider: str

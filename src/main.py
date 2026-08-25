@@ -1,4 +1,3 @@
-from models.redaction_level import RedactionLevel
 from datetime import UTC
 
 from collectors.git_local_collector.git_local_collector import collect as collect_git_local_events
@@ -30,14 +29,14 @@ until = now + timedelta(days=1)
 def get_git_local_events() -> list[Event]:
     roots = settings.git_local.roots
     identities = settings.git_local.identities
-    include_patch = False
+    include_patch = settings.git_local.include_patch
 
     return collect_git_local_events(roots, identities, since, until, include_patch)
 
 
 def get_github_events() -> list[Event]:
     identities = settings.github.identities
-    include_patch = False  # todo: move to config
+    include_patch = settings.github.include_patch
 
     return collect_github_events(identities, since, until, include_patch)
 
@@ -66,7 +65,7 @@ if __name__ == "__main__":
     # redact
     events = get_events(conn, since, until)
 
-    redactor = Redactor(RedactionLevel.NONE)
+    redactor = Redactor(settings.app.redaction_level)
     redacted_events = redactor.redact(events)
 
     if not redacted_events:
