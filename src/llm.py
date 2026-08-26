@@ -6,7 +6,8 @@ from pydantic_ai import Agent
 
 SUPPORTED_PROVIDERS = {"openai", "anthropic", "google", "ollama"}
 
-def get_agent(system_prompt: str) -> Agent[None, str]:
+
+def get_agent(system_prompt: str, provider: str, model: str, max_tokens: int) -> Agent[None, str]:
     """Build an Agent for the provider/model configured via env vars.
 
     LLM_PROVIDER selects the provider (openai, anthropic, google, or ollama).
@@ -17,19 +18,11 @@ def get_agent(system_prompt: str) -> Agent[None, str]:
     OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY (or GEMINI_API_KEY), or
     for ollama, OLLAMA_BASE_URL (and optional OLLAMA_API_KEY).
     """
-    provider = os.getenv("LLM_PROVIDER")
     if provider not in SUPPORTED_PROVIDERS:
         raise RuntimeError(
             f"LLM_PROVIDER must be one of {sorted(SUPPORTED_PROVIDERS)}, got {provider!r}"
         )
 
-    model_name = os.getenv("LLM_MODEL")
-    if not model_name:
-        raise RuntimeError("LLM_MODEL environment variable must be set")
-
-    max_tokens = os.getenv("LLM_MAX_TOKENS")
     model_settings = {"max_tokens": int(max_tokens)} if max_tokens else None
 
-    return Agent(
-        f"{provider}:{model_name}", system_prompt=system_prompt, model_settings=model_settings
-    )
+    return Agent(f"{provider}:{model}", system_prompt=system_prompt, model_settings=model_settings)

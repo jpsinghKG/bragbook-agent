@@ -115,6 +115,16 @@ make log MSG="Mentored Alice on the onboarding project" TYPE=meeting
 values in [src/models/event.py](src/models/event.py). Entries are appended to
 `db/user_input.jsonl` and picked up by the next run.
 
+### Running on a schedule
+
+```sh
+make scheduler
+```
+
+Runs in the foreground and fires the collection pipeline once a day at
+`app.schedule_time` (`bragbook.toml`, default `18:00`, 24h `HH:MM`).
+Run `make run` yourself whenever you want a summary written. Keep this running in a terminal, tmux, or similar; it does not survive the process being killed or the machine sleeping through the scheduled time.
+
 ## Common commands
 
 ```sh
@@ -122,6 +132,7 @@ make install     # uv sync, also installs the pre-commit hook
 make hooks       # install the pre-commit hook (runs automatically via install)
 make run         # run the pipeline once
 make log         # MSG="..." TYPE=... — log a manual entry
+make scheduler   # run the collection pipeline on a daily timer (foreground)
 make format      # ruff format
 make lint        # ruff check
 make lint-fix    # ruff check --fix

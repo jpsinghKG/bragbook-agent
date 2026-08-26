@@ -17,6 +17,7 @@ dependencies = [
     "pygithub>=2.9.1",
     "python-dotenv>=1.2.3",
     "rich>=15.0.0",
+    "schedule>=1.2.2",
     "typer>=0.27.1",
 ]
 

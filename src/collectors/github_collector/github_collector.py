@@ -111,7 +111,7 @@ class GithubCollector:
                         continue
                     if review.submitted_at is None or not (since <= review.submitted_at <= until):
                         continue
-                    
+
                     seen[review.id] = (pr, review)
 
         return [self._review_to_event(pr, review) for pr, review in seen.values()]
