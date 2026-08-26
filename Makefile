@@ -1,4 +1,4 @@
-.PHONY: install hooks run log format lint lint-fix test clean
+.PHONY: install hooks run log scheduler format lint lint-fix test clean
 
 install:
 	uv sync
@@ -12,6 +12,9 @@ run:
 
 log:
 	PYTHONPATH=src uv run python src/cli.py "$(MSG)" $(if $(TYPE),--type $(TYPE),)
+
+scheduler:
+	PYTHONPATH=src uv run python src/scheduler.py
 
 format:
 	uv run ruff format .

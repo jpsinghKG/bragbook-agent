@@ -13,6 +13,7 @@ from models.redaction_level import RedactionLevel
 class AppConfig(BaseModel):
     days_since: int = 1
     redaction_level: RedactionLevel = RedactionLevel.NONE
+    schedule_time: str = "18:00"
 
 
 class SourcesConfig(BaseModel):
